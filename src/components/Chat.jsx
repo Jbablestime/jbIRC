@@ -172,7 +172,7 @@ export default function Chat({ connectionDetails, onDisconnect }) {
                                     {u.mode || ''}
                                 </span>
 
-                                {u.nick} {u.client && <img title='Active with jbIRC' width={20} src={`../${u.client}.png`}></img>}
+                                {u.nick} {u.client && <img title='Active with jbIRC' width={20} src={`../jbIRC.png`}></img>}
                             </div>
                         </div>
                     ))}
