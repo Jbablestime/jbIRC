@@ -8,6 +8,7 @@ const fs = require('fs');
 
 let mainWindow;
 let ircClient;
+let currentStream;
 
 function getLogPath() {
   const logDir = path.join(app.getPath('userData'), 'logs');
@@ -20,8 +21,7 @@ function getLogPath() {
 function writeToLog(type, nick, target, message) {
   try {
     const timestamp = new Date().toLocaleString(); 
-    // Format: [12/17/2025, 10:00:00 AM] [MSG] <Nick> (#channel): Message
-    const logLine = `[${timestamp}] [${type}] <${nick}> (${target}): ${message}\n`;
+    const logLine = `[${timestamp}] [${type}] <${nick}> (${target}): ${message}\n`; // Format: [12/17/2025, 10:00:00 AM] [MSG] <Nick> (#channel): Message
     
     fs.appendFile(getLogPath(), logLine, (err) => {
       if (err) console.error("Failed to write to log:", err);
@@ -45,6 +45,14 @@ const createWindow = () => {
 		},
 		backgroundColor: '#000000'
     });
+
+	mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+		if (url.startsWith('http:') || url.startsWith('https:')) {
+			shell.openExternal(url);
+		}
+
+		return { action: 'deny' };
+	});
 
     if (app.isPackaged) {
 		const productionPath = path.join(__dirname, '../renderer/main_window/index.html');
@@ -72,7 +80,8 @@ ipcMain.handle('close-window', () => {
 });
 
 ipcMain.handle('connect-irc', async (event, data) => {
-	console.log("Initializing Connection Protocol...", data);
+	console.log("[Net] Initializing Connection Protocol...");
+	// console.log(data)
 	const { nick, server, port, channels, tls: useTls, proxy, client="jbIRC" } = data;
 	
 	if (ircClient) {
@@ -83,7 +92,7 @@ ipcMain.handle('connect-irc', async (event, data) => {
 
 	try {
 		if (proxy && proxy.enabled) {
-			console.log(`Routing traffic via ${proxy.type} Proxy: ${proxy.host}:${proxy.port}`);
+			console.log(`[Net] Routing traffic via ${proxy.type} Proxy: ${proxy.host}:${proxy.port}`);
 
 			const proxyInfo = await SocksClient.createConnection({
 				proxy: {
@@ -99,11 +108,11 @@ ipcMain.handle('connect-irc', async (event, data) => {
 			});
 		
 			transportSocket = proxyInfo.socket;
-			console.log("Proxy Tunnel Established.");
+			console.log("[Net] Proxy Tunnel Established.");
 		}
 
 		if (useTls) {
-			console.log("Upgrading Socket to TLS...");
+			console.log("[Net] Upgrading Socket to TLS...");
 			
 			const tlsOptions = {
 				host: server, 
@@ -122,12 +131,12 @@ ipcMain.handle('connect-irc', async (event, data) => {
 			if (transportSocket.authorized || transportSocket.encrypted) return resolve();
 			
 			transportSocket.once('secureConnect', () => {
-				console.log("TLS Handshake Successful.");
+				console.log("[Net] TLS Handshake Successful.");
 				resolve();
 			});
 			
 			transportSocket.once('error', (err) => {
-				console.error("TLS Handshake Failed:", err);
+				console.error("[Net] TLS Handshake Failed:", err);
 				reject(err);
 			});
 		});
@@ -154,7 +163,6 @@ ipcMain.handle('connect-irc', async (event, data) => {
 
 		ircClient.connect(connectOptions);
 
-
 		ircClient.on('registered', () => {
 			if (channels && channels.length > 0) {
 				channels.forEach(channel => ircClient.join(channel));
@@ -171,17 +179,11 @@ ipcMain.handle('connect-irc', async (event, data) => {
 
 		ircClient.on('message', (event) => {
 			writeToLog('MSG', event.nick, event.target, event.message);
-			
-			sendMessageToUI({ 
-				nick: event.nick, 
-				target: event.target, 
-				message: event.message, 
-				type: 'message' 
-			});
+			sendMessageToUI({ nick: event.nick, target: event.target, message: event.message, type: 'message' });
 		});
 
 	} catch (err) {
-		console.error("Connection Failed:", err);
+		console.error("[Net] Connection Failed:", err);
 		writeToLog('ERR', 'System', 'Local', `Connection Failed: ${err.message}`);
 		const wins = BrowserWindow.getAllWindows();
 		if(wins[0]) wins[0].webContents.send('irc-status', `ERROR: ${err.message}`);
@@ -190,12 +192,29 @@ ipcMain.handle('connect-irc', async (event, data) => {
 	return { success: true };
 });
 
-ipcMain.handle('send-message', async (event, { target, message }) => {
-	if (ircClient) {
-		ircClient.say(target, message);
 
-		writeToLog('SENT', ircClient.user.nick, target, message);
-	}
+ipcMain.handle('disconnect', () => {
+    console.log("[Net] Handshake aborted by user");
+    if (ircClient) {
+        ircClient.quit();
+        ircClient = null;
+    }
+   
+    if (currentStream) {
+        currentStream.destroy();
+        currentStream = null;
+    }
+    return { success: true };
+});
+
+ipcMain.handle('send-message', async (event, { target, message }) => {
+	if (ircClient) { ircClient.say(target, message); writeToLog('SENT', ircClient.user.nick, target, message); }
+});
+
+ipcMain.handle('open-url', async (event, url) => {
+    if (url && (url.startsWith('http:') || url.startsWith('https:'))) {
+        await shell.openExternal(url);
+    }
 });
 
 function sendMessageToUI(data) {
@@ -215,9 +234,7 @@ function sendMessageToUI(data) {
 	}
 }
 
-ipcMain.handle('open-logs', () => {
-    shell.openPath(path.join(app.getPath('userData'), 'logs'));
-});
+ipcMain.handle('open-logs', () => { shell.openPath(path.join(app.getPath('userData'), 'logs')) });
 
 app.on('ready', createWindow);
 

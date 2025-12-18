@@ -1,7 +1,7 @@
 {
   "name": "jbirc",
   "productName": "jbIRC",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -12,11 +12,6 @@
     "sync:mobile": "npm run build:mobile && npx cap sync"
   },
   "dependencies": {
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/cli": "^8.0.0",
-    "@capacitor/core": "^8.0.0",
-    "@capacitor/ios": "^8.0.0",
-    "capacitor-tcp-socket-plugin": "^0.0.4",
     "electron-squirrel-startup": "^1.0.0",
     "irc-framework": "^4.14.0",
     "react": "^19.2.3",

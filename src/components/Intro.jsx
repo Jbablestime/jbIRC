@@ -57,13 +57,11 @@ export default function Intro({ onConnect }) {
 		setStatus(proxyConfig.enabled ? 'ESTABLISHING_SECURE_TUNNEL...' : 'INITIATING_HANDSHAKE...');
 		const channelArray = formData.channels.split(',').map(c => c.trim()).filter(Boolean);
 		
-		setTimeout(() => {
-			onConnect({ 
-				...formData, 
-				channels: channelArray,
-				proxy: proxyConfig
-			});
-		}, 500);
+		onConnect({ 
+			...formData, 
+			channels: channelArray,
+			proxy: proxyConfig
+		});
 	};
 
 	return (

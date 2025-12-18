@@ -2,6 +2,10 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('ircAPI', {
     connect: (data) => ipcRenderer.invoke('connect-irc', data),
+    disconnect: () => ipcRenderer.invoke('disconnect'),
+
+    openExternal: (url) => ipcRenderer.invoke('open-url', url),
+
     sendMessage: (data) => ipcRenderer.invoke('send-message', data),
     openLogs: () => ipcRenderer.invoke('open-logs'),
 

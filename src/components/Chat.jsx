@@ -21,11 +21,14 @@ export default function Chat({ connectionDetails, onDisconnect }) {
         { nick: connectionDetails.nick, mode: '@', client: connectionDetails.client },
     ]);
 
-    const messagesEndRef = useRef(null);
+    const scrollContainerRef = useRef(null);
     const currentChannel = connectionDetails.channels[0];
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+        if (scrollContainerRef.current) {
+            const { scrollHeight, clientHeight } = scrollContainerRef.current;
+            scrollContainerRef.current.scrollTop = scrollHeight - clientHeight;
+        }
     };
 
     useEffect(() => {
@@ -111,13 +114,13 @@ export default function Chat({ connectionDetails, onDisconnect }) {
             </div>
 
             <div className="flex-1 flex flex-col min-w-0 bg-black">
-                <div className="h-10 border-b border-neutral-800 flex items-center justify-between px-4 bg-neutral-950">
-                    <button className='font-mono text-orange-500 hover:text-orange-300' onClick={handleOpenLogs}>
+                <div className="h-10 border-b border-neutral-800 flex align-start justify-start items-center px-4 bg-neutral-950">
+                    <button className='group border h-[25px] flex items-center border-red-900/50 bg-red-950/20 px-6 py-2 rounded text-xs text-red-500 hover:bg-red-900 hover:text-white hover:border-red-500 transition-all uppercase tracking-wider font-mono' onClick={handleOpenLogs}>
                         [ Open Logs ]
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-2 font-mono text-[13px] leading-6 custom-scrollbar">
+                <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-2 font-mono text-[13px] leading-6 custom-scrollbar">
                     <div className="mb-4 text-neutral-500">
                         --- Now talking in {currentChannel} ---
                     </div>
@@ -142,12 +145,11 @@ export default function Chat({ connectionDetails, onDisconnect }) {
                             </div>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-3 bg-neutral-950 border-t border-neutral-800">
+                <div className="p-1 bg-neutral-950 border-t border-neutral-800">
                     <form onSubmit={handleSend} className="flex gap-2">
-                        <span className="text-purple-500 font-mono py-2">{connectionDetails.nick} &gt;</span>
+                        <span className="text-purple-500 font-mono pl-2 py-2">{connectionDetails.nick} &gt;</span>
                         <input 
                             type="text" 
                             value={inputText}
