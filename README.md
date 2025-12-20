@@ -1,4 +1,4 @@
-# jbIRC
+# jbIRC <img src="https://cdn.nest.rip/uploads/4e8c88d9-4ae1-428d-b5e6-632ef5962865.png" height="50" width="50">
 **jbIRC** is a modern, privacy-focused IRC client featuring a custom "System Access" aesthetic. Built with Electron, React, and Vite, it allows for secure, anonymous communication by routing traffic through SOCKS5 proxies (like Tor) before establishing TLS connections.
 
 ![jbIRC Screenshot](https://cdn.nest.rip/uploads/9ed7894e-c67a-44b0-99a0-61fd2d5d7175.png)
