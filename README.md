@@ -20,6 +20,10 @@ jbIRC is a modern, user friendly IRC client built around privacy and security. D
 - npm
 
 ### Setup
+> [!IMPORTANT]
+> You can find the jbIRC Setup Installer in our GitHub [Releases](https://github.com/Jbablestime/jbIRC/releases) for those who don't want to compile it from code. This will create a shortcut on your desktop for jbIRC. 
+
+
 1. **Clone the repository**
 ```
 git clone https://github.com/Jbablestime/jbIRC.git
