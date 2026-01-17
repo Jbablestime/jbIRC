@@ -8,6 +8,11 @@
     "compile": "vite build -c vite.main.config.mjs --outDir .vite/build && vite build -c vite.preload.config.mjs --outDir .vite/build && vite build -c vite.renderer.config.mjs --outDir .vite/renderer/main_window",
     "package": "npm run compile && electron-builder build --win --dir",
     "make": "npm run compile && electron-builder build --win",
+    "build:all": "npm run compile && electron-builder build --win --mac --linux",
+    "build:windows": "npm run compile && electron-builder build --win",
+    "build:macos": "npm run compile && electron-builder build --mac",
+    "build:linux": "npm run compile && electron-builder build --linux",
+    "build:forge": "electron-forge make --platform=all",
     "build:mobile": "vite build --config vite.mobile.config.js"
   },
   "dependencies": {
@@ -82,6 +87,10 @@
       "target": "dmg",
       "category": "public.app-category.social-networking",
       "icon": "icon.icns"
+    },
+    "linux": {
+      "target": "deb",
+      "icon": "icon.png"
     },
     "extraMetadata": {
       "main": ".vite/build/main.js"

@@ -45,13 +45,36 @@ npm run start
 - ![GitHub package.json prod dependency version](https://img.shields.io/github/package-json/dependency-version/Jbablestime/jbIRC/irc-framework)
 - ![GitHub package.json prod dependency version](https://img.shields.io/github/package-json/dependency-version/Jbablestime/jbIRC/socks)
 
-### Building for Windows
-Compiles the workspace into an optimized NSIS installer
+### Cross-Platform Build Scripts
+
+#### Build All Platforms
+Builds optimized installers for Windows, macOS, and Linux simultaneously
 ```
-npm run make
+npm run build:all
 ```
 
-Other build scripts will be made along with support for other platforms here.
+#### Platform-Specific Builds
+```
+# Windows (NSIS installer)
+npm run build:windows
+
+# macOS (DMG disk image)
+npm run build:macos
+
+# Linux (DEB package)
+npm run build:linux
+```
+
+#### Output Locations
+- **Windows**: `dist/jbIRC Setup X.X.X.exe` (NSIS installer)
+- **macOS**: `dist/jbIRC-X.X.X.dmg` (DMG disk image)
+- **Linux**: `dist/jbirc_X.X.X_amd64.deb` (Debian package)
+
+#### Development
+Run the application in development mode
+```
+npm run start
+```
 
 
 
