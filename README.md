@@ -76,5 +76,9 @@ Run the application in development mode
 npm run start
 ```
 
+## 🔧 Contributing
+![Contributors](https://img.shields.io/github/contributors/Jbablestime/jbIRC)
+
+Contributions are very much welcome, but are expected to be clean and follow standard practice methodologies. All PRs are subjected to review, and are not guaranteed to be merged.
 
 
