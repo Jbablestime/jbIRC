@@ -1,10 +1,21 @@
-# jbIRC <img src="https://cdn.nest.rip/uploads/4e8c88d9-4ae1-428d-b5e6-632ef5962865.png" height="35" width="35">
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/Jbablestime/jbIRC/latest/total)
-![GitHub License](https://img.shields.io/github/license/Jbablestime/jbIRC)
+<p align="center">
+  <h1 align="center">jbIRC <img src="https://cdn.nest.rip/uploads/4e8c88d9-4ae1-428d-b5e6-632ef5962865.png" height="35" width="35"></h1>
+</p>
 
-jbIRC is a modern, user friendly IRC client built around privacy. Developed with Tailwind, React, and Electron.
+<div align="center">
+  <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/Jbablestime/jbIRC/total">
+  <img alt="GitHub Downloads (all assets, latest release)" src="https://img.shields.io/github/downloads/Jbablestime/jbIRC/latest/total">
+  <img alt="GitHub License" src="https://img.shields.io/github/license/Jbablestime/jbIRC">
+</div>
 
-![jbIRC Screenshot](https://cdn.nest.rip/uploads/9ed7894e-c67a-44b0-99a0-61fd2d5d7175.png)
+<p align="center">
+  jbIRC is a modern, user friendly IRC client built around privacy. Developed with Tailwind, React, and Electron.
+</p>
+
+<p align="center">
+  <img src="https://cdn.nest.rip/uploads/9ed7894e-c67a-44b0-99a0-61fd2d5d7175.png">
+</p>
+
 
 ## 🚀 Features
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/Jbablestime/jbIRC)
