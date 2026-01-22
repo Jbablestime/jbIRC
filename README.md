@@ -2,7 +2,7 @@
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/Jbablestime/jbIRC/latest/total)
 ![GitHub License](https://img.shields.io/github/license/Jbablestime/jbIRC)
 
-jbIRC is a modern, user friendly IRC client built around privacy and security. Developed with Tailwind, React, and Electron.
+jbIRC is a modern, user friendly IRC client built around privacy. Developed with Tailwind, React, and Electron.
 
 ![jbIRC Screenshot](https://cdn.nest.rip/uploads/9ed7894e-c67a-44b0-99a0-61fd2d5d7175.png)
 
