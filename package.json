@@ -2,9 +2,10 @@
   "name": "jbirc",
   "productName": "jbIRC",
   "version": "1.3.3",
+  "description": "jbIRC is a modern, user friendly, privacy-first IRC client.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jbablestime/jbIRC.git" 
+    "url": "git+https://github.com/Jbablestime/jbIRC.git"
   },
   "main": ".vite/build/main.js",
   "scripts": {
