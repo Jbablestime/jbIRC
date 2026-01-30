@@ -1,4 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ConfigService } from '../services/ConfigService';
+
+const THEME_VARS = {
+    purple: { text: 'text-purple-500', bg: 'bg-purple-600', border: 'border-purple-500', hex: '#9333ea', ring: 'focus:ring-purple-500' },
+    indigo: { text: 'text-indigo-500', bg: 'bg-indigo-600', border: 'border-indigo-500', hex: '#6366f1', ring: 'focus:ring-indigo-500' },
+    blue: { text: 'text-blue-500', bg: 'bg-blue-600', border: 'border-blue-500', hex: '#3b82f6', ring: 'focus:ring-blue-500' },
+    cyan: { text: 'text-cyan-500', bg: 'bg-cyan-600', border: 'border-cyan-500', hex: '#06b6d4', ring: 'focus:ring-cyan-500' },
+    teal: { text: 'text-teal-500', bg: 'bg-teal-600', border: 'border-teal-500', hex: '#14b8a6', ring: 'focus:ring-teal-500' },
+    green: { text: 'text-green-500', bg: 'bg-green-600', border: 'border-green-500', hex: '#22c55e', ring: 'focus:ring-green-500' },
+    yellow: { text: 'text-yellow-500', bg: 'bg-yellow-600', border: 'border-yellow-500', hex: '#eab308', ring: 'focus:ring-yellow-500' },
+    orange: { text: 'text-orange-500', bg: 'bg-orange-600', border: 'border-orange-500', hex: '#f97316', ring: 'focus:ring-orange-500' },
+    rose: { text: 'text-rose-500', bg: 'bg-rose-600', border: 'border-rose-500', hex: '#f43f5e', ring: 'focus:ring-rose-500' },
+    pink: { text: 'text-pink-500', bg: 'bg-pink-600', border: 'border-pink-500', hex: '#ec4899', ring: 'focus:ring-pink-500' },
+};
 
 export default function Intro({ onConnect }) {
     const [proxyDropdownOpen, setProxyDropdownOpen] = useState(false);
@@ -23,6 +37,45 @@ export default function Intro({ onConnect }) {
 
     const [saslEnabled, setSaslEnabled] = useState(false);
     const [status, setStatus] = useState('READY TO INITIALIZE...');
+
+    const [themeColor, setThemeColor] = useState('purple');
+
+        useEffect(() => {
+        const savedConn = ConfigService.loadConnection();
+        if (savedConn) {
+            setFormData(prev => ({
+                ...prev,
+                nick: savedConn.nick || '',
+                server: savedConn.server || 'thepiratesplunder.org',
+                port: savedConn.port || 6697,
+                channels: Array.isArray(savedConn.channels) ? savedConn.channels.join(', ') : (savedConn.channels || '#TPP'),
+                tls: savedConn.tls !== undefined ? savedConn.tls : true,
+                saslAccount: savedConn.saslAccount || '',
+                saslPassword: savedConn.saslPassword || ''
+            }));
+
+            if (savedConn.proxy) setProxyConfig(savedConn.proxy);
+            if (savedConn.saslEnabled) setSaslEnabled(true);
+            
+            setStatus('CONFIGURATION LOADED.');
+        } else {
+            setStatus('READY TO INITIALIZE...');
+        }
+
+        const loadTheme = () => {
+            const savedSettings = ConfigService.loadSettings();
+            if (savedSettings && savedSettings.themeColor) {
+                setThemeColor(savedSettings.themeColor);
+            }
+        };
+        
+        loadTheme();
+        window.addEventListener('jbirc-settings-changed', loadTheme);
+        
+        return () => window.removeEventListener('jbirc-settings-changed', loadTheme);
+    }, []);
+
+    const themeStyles = THEME_VARS[themeColor] || THEME_VARS.purple;
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -81,12 +134,15 @@ export default function Intro({ onConnect }) {
         setStatus(proxyConfig.enabled ? 'ESTABLISHING_SECURE_TUNNEL...' : 'INITIATING_HANDSHAKE...');
         const channelArray = formData.channels.split(',').map(c => c.trim()).filter(Boolean);
         
-        onConnect({ 
+        const connectData = { 
             ...formData, 
             channels: channelArray,
             proxy: proxyConfig,
             saslEnabled: saslEnabled 
-        });
+        };
+
+        ConfigService.saveConnection(connectData);
+        onConnect(connectData);
     };
 
     return (
@@ -126,10 +182,10 @@ export default function Intro({ onConnect }) {
                                         value={formData.nick}
                                         onChange={handleChange}
                                         placeholder="Enter alias..."
-                                        className={`w-full bg-neutral-900 border pl-8 pr-4 py-2 focus:outline-none transition-all placeholder-neutral-700 ${
+                                        className={`w-full bg-neutral-900 border pl-8 pr-4 py-2 focus:outline-none transition-all placeholder-neutral-700 focus:ring-1 ${
                                             saslEnabled 
-                                            ? 'border-cyan-500 text-cyan-50 shadow-[0_0_8px_rgba(6,182,212,0.15)] focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500' 
-                                            : 'border-neutral-800 text-gray-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500'
+                                            ? 'border-cyan-500 text-cyan-50 shadow-[0_0_8px_rgba(6,182,212,0.15)] focus:ring-cyan-500 focus:border-cyan-500' 
+                                            : `border-neutral-800 text-gray-200 ${themeStyles.focus}`
                                         }`}
                                         autoFocus
                                     />
@@ -143,7 +199,7 @@ export default function Intro({ onConnect }) {
                                         name="server"
                                         value={formData.server}
                                         onChange={handleChange}
-                                        className="w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                                        className={`w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 focus:outline-none focus:ring-1 transition-all ${themeStyles.focus}`}
                                     />
                                 </div>
                                 <div className="space-y-1">
@@ -153,7 +209,7 @@ export default function Intro({ onConnect }) {
                                         type="number"
                                         value={formData.port}
                                         onChange={handleChange}
-                                        className="w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 text-center focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                                        className={`w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 text-center focus:outline-none focus:ring-1 transition-all ${themeStyles.focus}`}
                                     />
                                 </div>
                             </div>
@@ -165,7 +221,7 @@ export default function Intro({ onConnect }) {
                                     value={formData.channels}
                                     onChange={handleChange}
                                     placeholder="#channel1, #channel2"
-                                    className="w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder-neutral-700"
+                                    className={`w-full bg-neutral-900 border border-neutral-800 text-gray-200 px-4 py-2 focus:outline-none focus:ring-1 transition-all placeholder-neutral-700 ${themeStyles.focus}`}
                                 />
                             </div>
 
@@ -197,13 +253,13 @@ export default function Intro({ onConnect }) {
                                         <div className="space-y-3">
                                             <div className="space-y-1">
                                                 <label className="text-[10px] text-cyan-600 font-bold uppercase flex items-center gap-2">
-                                                    Account Name
+                                                    Account Name 
                                                 </label>
                                                 <input 
                                                     name="saslAccount" 
                                                     value={formData.saslAccount} 
                                                     onChange={handleChange} 
-                                                    placeholder="Account username"
+                                                    placeholder="Mirrors nickname..."
                                                     className="w-full bg-neutral-900 border border-cyan-500/50 text-cyan-100 text-xs py-2 px-2 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-500/30 placeholder-cyan-900/50 transition-all"
                                                 />
                                             </div>
@@ -329,7 +385,7 @@ export default function Intro({ onConnect }) {
                                 className={`w-full font-bold py-3 mt-4 border transition-all duration-300 uppercase tracking-widest text-sm ${
                                     proxyConfig.enabled 
                                         ? 'bg-orange-950/30 border-orange-900 text-orange-500 hover:bg-orange-900/20 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)]' 
-                                        : 'bg-gray-100 hover:bg-white cursor-pointer text-black border-transparent hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                                        : `${themeStyles.bg} ${themeStyles.hoverBg} border-${themeColor}-600 text-white cursor-pointer hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]`
                                 }`}
                             >
                                 {proxyConfig.enabled ? '[ INITIALIZE TUNNEL ]' : '[ CONNECT ]'}
@@ -339,7 +395,7 @@ export default function Intro({ onConnect }) {
                     </div>
 
                     <div className="bg-neutral-900 border-t border-neutral-800 px-4 py-1.5 text-[10px] text-neutral-500 flex justify-between uppercase">
-                        <span>Status: <span className={`transition-colors duration-500 ${proxyConfig.enabled ? "text-orange-400" : "text-purple-400"}`}>{status}</span></span>
+                        <span>Status: <span className={`transition-colors duration-500 ${proxyConfig.enabled ? "text-orange-400" : themeStyles.text}`}>{status}</span></span>
                     </div>
                 </div>
             </div>

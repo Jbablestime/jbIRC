@@ -96,3 +96,6 @@ dist/
 
 # Development
 wss/
+android/
+capacitor.config.ts
+src/utils/environment.js

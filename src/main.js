@@ -90,6 +90,7 @@ ipcMain.handle('connect-irc', async (event, data) => {
         tls: useTls, 
         proxy, 
         client="jbIRC",
+        hostname="jbIRC",
         saslEnabled,
         saslPassword,
         saslAccount
@@ -158,6 +159,7 @@ ipcMain.handle('connect-irc', async (event, data) => {
         const connectOptions = {
             nick: nick,
             username: saslAccount || nick, 
+            hostname: 'jbIRC',
             gecos: 'jbIRC',
             encoding: 'utf8',
             version: client,
