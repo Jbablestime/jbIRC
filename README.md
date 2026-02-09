@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://cdn.nest.rip/uploads/ef2174a4-717b-4e61-ae66-f8ea496dce69.png">
+  <img src="https://cdn.nest.rip/uploads/b17ef85b-7cc4-4bde-8c63-96b3284fea0f.png">
 </p>
 
 
